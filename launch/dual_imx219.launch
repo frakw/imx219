@@ -1,0 +1,7 @@
+<launch>
+    <node name="rgb_original_image" pkg="imx219" type="dual_imx219.py" output="screen" />
+    
+    <node name="synced_image" pkg="imx219" type="sync.py" output="screen" />
+    
+    <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find imx219)/default.rviz" required="true" /-->
+</launch>
