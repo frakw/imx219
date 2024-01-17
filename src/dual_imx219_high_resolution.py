@@ -112,10 +112,10 @@ Default 1920x1080
 
 def gstreamer_pipeline(
     sensor_id=0,
-    capture_width=1920,
-    capture_height=1920,
-    display_width=640,
-    display_height=640,
+    capture_width=1640,
+    capture_height=1232,
+    display_width=1640,
+    display_height=1232,
     framerate=21,
     flip_method=0,
 ):
@@ -144,11 +144,11 @@ def run_cameras():
     left_camera.open(
         gstreamer_pipeline(
             sensor_id=0,
-            capture_width=3280,
-            capture_height=2464,
+            capture_width=1640,
+            capture_height=1232,
             flip_method=0,
-            display_width=960,
-            display_height=540,
+            display_width=1640,
+            display_height=1232,
         )
     )
     left_camera.start()
@@ -157,11 +157,11 @@ def run_cameras():
     right_camera.open(
         gstreamer_pipeline(
             sensor_id=1,
-            capture_width=3280,
-            capture_height=2464,
+            capture_width=1640,
+            capture_height=1232,
             flip_method=0,
-            display_width=960,
-            display_height=540,
+            display_width=1640,
+            display_height=1232,
         )
     )
     right_camera.start()
@@ -190,8 +190,9 @@ def run_cameras():
                 else:
                     break
                 '''
-                left_image = cv2.resize(left_image,(width,height))
-                right_image = cv2.resize(right_image,(width,height))
+                #print(left_image.shape)
+                #left_image = cv2.resize(left_image,(width,height))
+                #right_image = cv2.resize(right_image,(width,height))
                 img_to_rviz1 = bridge.cv2_to_imgmsg(left_image, "bgr8")
                 img_to_rviz2 = bridge.cv2_to_imgmsg(right_image, "bgr8")
                 time_stamp = rospy.Time.now()

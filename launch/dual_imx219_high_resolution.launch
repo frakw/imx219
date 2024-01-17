@@ -1,5 +1,5 @@
 <launch>
-    <node name="rgb_original_image" pkg="imx219" type="dual_imx219.py" output="screen" />
+    <node name="rgb_original_image" pkg="imx219" type="dual_imx219_high_resolution.py" output="screen" />
     
     <node name="synced_image" pkg="imx219" type="sync.py" output="screen" />
     

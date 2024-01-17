@@ -143,84 +143,69 @@ def run_cameras():
     left_camera = CSI_Camera()
     left_camera.open(
         gstreamer_pipeline(
-            sensor_id=0,
-            capture_width=3280,
-            capture_height=2464,
+            sensor_id=1,
+            capture_width=1640,
+            capture_height=1232,
             flip_method=0,
-            display_width=960,
-            display_height=540,
+            display_width=1640,
+            display_height=1232,
         )
     )
     left_camera.start()
 
-    right_camera = CSI_Camera()
-    right_camera.open(
-        gstreamer_pipeline(
-            sensor_id=1,
-            capture_width=3280,
-            capture_height=2464,
-            flip_method=0,
-            display_width=960,
-            display_height=540,
-        )
-    )
-    right_camera.start()
+    
     
     rospy.init_node('rgb_camera', anonymous=True) # the first parameter is nodename and 'annonymous' is used to avoid when same nodename occur
-    pub1 = rospy.Publisher('/rgb1', Image, queue_size=10 ) # the first parameter is topicname
-    pub2 = rospy.Publisher('/rgb2', Image, queue_size=10 ) # the first parameter is topicname
+    pub1 = rospy.Publisher('/rgb2', Image, queue_size=10 ) # the first parameter is topicname
     bridge = CvBridge()
-    if left_camera.video_capture.isOpened() and right_camera.video_capture.isOpened():
-
-        #cv2.namedWindow(window_title, cv2.WINDOW_AUTOSIZE)
+    imshow = False
+    if left_camera.video_capture.isOpened():
+        if imshow:
+            cv2.namedWindow(window_title, cv2.WINDOW_AUTOSIZE)
 
         try:
             while True:
                 _, left_image = left_camera.read()
-                _, right_image = right_camera.read()
                 # Use numpy to place images next to each other
-                camera_images = np.hstack((left_image, right_image)) 
+                #camera_images = np.hstack((left_image, right_image)) 
                 # Check to see if the user closed the window
                 # Under GTK+ (Jetson Default), WND_PROP_VISIBLE does not work correctly. Under Qt it does
                 # GTK - Substitute WND_PROP_AUTOSIZE to detect if window has been closed by user
-                '''
-                if cv2.getWindowProperty(window_title, cv2.WND_PROP_AUTOSIZE) >= 0:
-                    pass
-                    #cv2.imshow(window_title, camera_images)
-                else:
-                    break
-                '''
-                left_image = cv2.resize(left_image,(width,height))
-                right_image = cv2.resize(right_image,(width,height))
+              
+                
+                
+                #left_image = cv2.resize(left_image,(960,480))
+                if imshow:
+                    if cv2.getWindowProperty(window_title, cv2.WND_PROP_AUTOSIZE) >= 0:
+                        pass
+                    
+                        cv2.imshow(window_title, left_image)
+                    else:
+                        break
                 img_to_rviz1 = bridge.cv2_to_imgmsg(left_image, "bgr8")
-                img_to_rviz2 = bridge.cv2_to_imgmsg(right_image, "bgr8")
                 time_stamp = rospy.Time.now()
                 img_to_rviz1.header.stamp = time_stamp
-                img_to_rviz2.header.stamp = time_stamp
                 #img_to_rviz1.header.frame_id = "frame"
                 #img_to_rviz2.header.frame_id = "frame"
                 pub1.publish(img_to_rviz1)
-                pub2.publish(img_to_rviz2)
                 #out1.write(cv2.resize(left_image,(width,height)))
                 #out2.write(cv2.resize(right_image,(width,height)))
                 # This also acts as
-                keyCode = cv2.waitKey(30) & 0xFF
-                # Stop the program on the ESC key
-                if keyCode == 27:
-                    break
+                if imshow:
+                    keyCode = cv2.waitKey(30) & 0xFF
+                    # Stop the program on the ESC key
+                    if keyCode == 27:
+                        break
         finally:
 
             left_camera.stop()
             left_camera.release()
-            right_camera.stop()
-            right_camera.release()
-        cv2.destroyAllWindows()
+        if imshow:
+            cv2.destroyAllWindows()
     else:
         print("Error: Unable to open both cameras")
         left_camera.stop()
         left_camera.release()
-        right_camera.stop()
-        right_camera.release()
 
 
 
